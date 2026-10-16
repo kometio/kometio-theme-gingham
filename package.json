@@ -1,0 +1,11 @@
+{
+  "name": "kometio-theme-gingham",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "A theme for a restaurant, a bar or a shop that sells food, built from its own repository.",
+  "dependencies": {
+    "@kometio/theme-runtime": "*",
+    "@kometio/block-sdk": "*"
+  }
+}

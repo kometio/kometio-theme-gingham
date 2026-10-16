@@ -1,0 +1,123 @@
+---
+import type { DailySpecialProps } from './DailySpecial.block';
+
+/**
+ * How the board is drawn. The props are the ones DailySpecial.block.ts
+ * declares; `instanceClass` is the one Kometio adds to every block that
+ * lists `stylableProperties`, and it has to end up on the element this file
+ * renders: it is the class the owner's own colors are written against. Drop
+ * it and the editor offers a color picker that saves a choice and changes
+ * nothing on the page.
+ */
+interface Props extends DailySpecialProps {
+  instanceClass?: string | null;
+}
+
+const { label, name, description, price, note, instanceClass } = Astro.props;
+---
+
+<!--
+  `data-kometio-field` is what lets the editor type into the text on the
+  canvas: the key of the field this element shows.
+-->
+<section class:list={['gingham-special', instanceClass]}>
+  {
+    label && (
+      <p class="gingham-special__label" data-kometio-field="label">
+        {label}
+      </p>
+    )
+  }
+  <p class="gingham-special__row">
+    <span class="gingham-special__name" data-kometio-field="name">{name}</span>
+    {price && <span class="gingham-special__leader" aria-hidden="true" />}
+    {
+      price && (
+        <span class="gingham-special__price" data-kometio-field="price">
+          {price}
+        </span>
+      )
+    }
+  </p>
+  {
+    description && (
+      <p class="gingham-special__description" data-kometio-field="description">
+        {description}
+      </p>
+    )
+  }
+  {
+    note && (
+      <p class="gingham-special__note" data-kometio-field="note">
+        {note}
+      </p>
+    )
+  }
+</section>
+
+<style>
+  /* The board: the owner's colors when they picked any
+     (`--kometio-override-bg` and `--kometio-override-text` arrive through
+     `instanceClass`), the theme's green and ivory when not. */
+  .gingham-special {
+    background: var(--kometio-override-bg, var(--gingham-green));
+    color: var(--kometio-override-text, var(--gingham-on-green));
+    border-radius: var(--radius);
+    padding: clamp(1.5rem, 1rem + 2vw, 2.5rem);
+    /* A thin double frame, as a chalk line drawn inside the board. */
+    outline: 1px solid color-mix(in srgb, currentColor 35%, transparent);
+    outline-offset: -0.625rem;
+  }
+
+  .gingham-special__label {
+    margin: 0 0 0.5rem;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--gingham-gold);
+  }
+
+  /* The name, a row of dots, the price: the line a menu has always had. The
+     dots are a leader that takes what is left of the row. */
+  .gingham-special__row {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+    margin: 0;
+    font-family: var(--kometio-heading-font);
+    font-size: var(--kometio-h3-size);
+    line-height: 1.2;
+  }
+
+  .gingham-special__name {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  /* Aligned to the first line of the name (the row's baseline), so a name
+     that wraps on a phone keeps its dots and its price on the first line. */
+  .gingham-special__leader {
+    flex: 1 1 1.5rem;
+    min-width: 1.5rem;
+    transform: translateY(-0.2em);
+    border-bottom: 2px dotted color-mix(in srgb, currentColor 55%, transparent);
+  }
+
+  .gingham-special__price {
+    white-space: nowrap;
+  }
+
+  .gingham-special__description {
+    margin: 0.75rem 0 0;
+    max-width: 52ch;
+    opacity: 0.92;
+  }
+
+  .gingham-special__note {
+    margin: 0.75rem 0 0;
+    font-size: 0.9375rem;
+    font-style: italic;
+    color: var(--gingham-gold);
+  }
+</style>

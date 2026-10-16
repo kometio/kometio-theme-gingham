@@ -1,0 +1,119 @@
+/**
+ * "gingham" — a theme for a restaurant, a bar, a bakery or a shop that sells
+ * food: bread-paper behind the words, espresso for the ink, a bottle-green
+ * band top and bottom, and a tomato red for what the visitor is asked to do.
+ *
+ * This file is rung 1 of the ladder in Kometio's docs/creating-a-theme.md, and
+ * the one that does most of the work: every one of Kometio's blocks is drawn
+ * from these custom properties, so changing a value here changes the whole
+ * site, and nothing here needs to follow Kometio when it changes. Only the
+ * `:root` custom properties of this file reach the page; a rule with any other
+ * selector is ignored, which is why the few things a token cannot say live in
+ * `regions/` and `blocks/`.
+ *
+ * Read it from the top: the comments say why a value is what it is, so that
+ * you can change it for your own design on purpose.
+ */
+
+:root {
+  /* Type. DM Serif Display for headings and Figtree for text: both are files
+     of this theme (fonts.css), named here exactly as the @font-face rules
+     name them. `--font-sans-value` and not `--font-sans`: the extra step is
+     what lets a site owner's own font picker take over later. */
+  --font-sans-value:
+    'Figtree Variable', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --kometio-heading-font: 'DM Serif Display', ui-serif, Georgia, serif;
+  /* DM Serif Display has one weight, 400: asking for more would only make the
+     browser smear it. */
+  --kometio-heading-weight: 400;
+  --kometio-h1-weight: 400;
+  --kometio-heading-tracking: -0.01em;
+  --kometio-heading-leading: 1.1;
+
+  /* The scale: the h1 is loud, from 44px on a phone to 80px on a wide window,
+     and the rest follows it down. `clamp(min, fluid, max)` is the usual way to
+     say "grow with the window, between these two". */
+  --kometio-h1-size: clamp(2.75rem, 1.8rem + 4vw, 5rem);
+  --kometio-h2-size: clamp(2rem, 1.6rem + 1.8vw, 2.75rem);
+  --kometio-h3-size: clamp(1.5rem, 1.35rem + 0.7vw, 1.875rem);
+  --kometio-h4-size: 1.25rem;
+  --kometio-h5-size: 1.0625rem;
+  --kometio-h6-size: 0.9375rem;
+
+  /* Color. Measured on these values, against the paper: the ink 14.8:1, the
+     muted ink 7.9:1, the tomato 6.8:1 (it is a link, a button and the small
+     line above a title, so it has to read as text).
+
+     `--secondary` is a quiet surface with the ink on it, as core uses it (a
+     Banner, a secondary Button, a Container). A dark color there makes every
+     block that sits on `--secondary` and writes in `--foreground` come out
+     dark on dark, so this theme's green is not here: it has a name of its
+     own, below. */
+  --background: #fbf6ec;
+  --foreground: #2a2018;
+  --primary: #9f2d20;
+  --primary-foreground: #fffaf1;
+  --secondary: #ece0c8;
+  --secondary-foreground: #2a2018;
+  --muted: #f3ebdc;
+  --muted-foreground: #5a4a3a;
+  --border: rgb(42 32 24 / 0.16);
+  --link: var(--primary);
+  --link-hover: #243f31;
+
+  /* Properties of this theme's own. A theme may declare as many as it likes;
+     only the names core reads have a meaning to core. The green (10.7:1 with
+     the ivory on it) is for the header, the footer and the Today's special
+     board; the check is drawn from the last two. */
+  --gingham-green: #243f31;
+  --gingham-on-green: #f6efe0;
+  --gingham-check: #b5382a;
+  --gingham-cloth: #fffaf1;
+  /* What the color tokens become inside the green bands: gold for what is
+     clickable (8:1 on the green), a paler ink for the quiet text (6.5:1) and
+     a hairline. Kept here so the header and the footer cannot drift apart. */
+  --gingham-gold: #f2d58f;
+  --gingham-on-green-muted: #cfc2a3;
+  --gingham-on-green-line: rgb(246 239 224 / 0.22);
+
+  /* Shape and space. Soft corners, a column that suits a menu rather than an
+     article, and a gutter that grows with the window. */
+  --radius: 0.5rem;
+  --kometio-content-width: 68rem;
+  --kometio-content-width-wide: 84rem;
+  --kometio-content-gutter: clamp(1.25rem, 0.5rem + 3.5vw, 3rem);
+  --kometio-page-start-gap: clamp(2rem, 1.2rem + 3vw, 3.5rem);
+  --kometio-block-gap: clamp(3rem, 2rem + 4vw, 5.5rem);
+
+  /* The Callout's "info" is a note from the house, so it is the house's
+     green and not a web-blue. Success, warning and error stay as core has
+     them: a reader has to be able to tell a note from a failure. Text on the
+     wash, measured: 11:1. */
+  --kometio-info: #243f31;
+  --kometio-info-text: #1d3427;
+  --kometio-info-surface: rgb(36 63 49 / 0.08);
+
+  /* Shadows, warm: the ink at low alpha, and not neutral black. */
+  --shadow-xs: 0 1px 2px 0 rgb(42 32 24 / 0.05);
+  --shadow-sm:
+    0 1px 3px 0 rgb(42 32 24 / 0.09), 0 1px 2px -1px rgb(42 32 24 / 0.06);
+  --shadow-md:
+    0 6px 12px -4px rgb(42 32 24 / 0.12), 0 2px 4px -2px rgb(42 32 24 / 0.06);
+  --shadow-lg:
+    0 16px 32px -12px rgb(42 32 24 / 0.18), 0 4px 8px -4px rgb(42 32 24 / 0.06);
+  --shadow-xl:
+    0 28px 48px -16px rgb(42 32 24 / 0.22), 0 8px 16px -8px rgb(42 32 24 / 0.08);
+  --shadow-2xl: 0 40px 80px -24px rgb(42 32 24 / 0.3);
+  --shadow-inner: inset 0 2px 4px 0 rgb(42 32 24 / 0.06);
+
+  /* Motion (Kometio's ADR-0141). A dish coming to the table: things fade in a
+     few pixels from below, one after the other, and a button gives a little
+     under the finger. A visitor who asked their device for less motion never
+     sees any of it, whatever is set here. */
+  --kometio-motion-duration-fast: 160ms;
+  --kometio-motion-duration-slow: 700ms;
+  --kometio-motion-ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --kometio-motion-reveal: kometio-slide-up;
+  --kometio-motion-distance: 12px;
+  --kometio-motion-stagger: 90ms;
+}

@@ -1,0 +1,26 @@
+{
+  "en": {
+    "label": "Today’s special",
+    "fields": {
+      "label": { "fieldLabel": "Heading of the board" },
+      "name": { "fieldLabel": "Dish" },
+      "description": { "fieldLabel": "What is in it" },
+      "price": {
+        "fieldLabel": "Price (as you want it written, for example “14” or “9 / 14”)"
+      },
+      "note": { "fieldLabel": "Note (for example “Lunch only”)" }
+    }
+  },
+  "it": {
+    "label": "Piatto del giorno",
+    "fields": {
+      "label": { "fieldLabel": "Titolo della lavagna" },
+      "name": { "fieldLabel": "Piatto" },
+      "description": { "fieldLabel": "Cosa c’è dentro" },
+      "price": {
+        "fieldLabel": "Prezzo (come vuoi che sia scritto, per esempio «14» o «9 / 14»)"
+      },
+      "note": { "fieldLabel": "Nota (per esempio «Solo a pranzo»)" }
+    }
+  }
+}
