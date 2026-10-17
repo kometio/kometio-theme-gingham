@@ -1,0 +1,49 @@
+/*
+ * DM Serif Display (headings) and Figtree (text), both SIL Open Font
+ * License 1.1 — fonts/OFL-*.txt. The Latin subset of each, which covers
+ * Italian, English and the rest of western Europe, in four files of about
+ * 90 KB together.
+ *
+ * Files of the theme, never a <link> to a font service: a visitor's address
+ * would go to a third party on every page, and a site served on a private
+ * network would have no fonts at all. docs/creating-a-theme.md ("Adding a
+ * webfont") says how to get the files.
+ *
+ * The family names here are the ones theme.css asks for, letter for letter.
+ */
+
+/* dm-serif-display-latin-400-normal */
+@font-face {
+  font-family: 'DM Serif Display';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400;
+  src: url(./fonts/dm-serif-display-latin-400-normal.woff2) format('woff2');
+}
+
+/* dm-serif-display-latin-400-italic */
+@font-face {
+  font-family: 'DM Serif Display';
+  font-style: italic;
+  font-display: swap;
+  font-weight: 400;
+  src: url(./fonts/dm-serif-display-latin-400-italic.woff2) format('woff2');
+}
+
+/* figtree-latin-wght-normal */
+@font-face {
+  font-family: 'Figtree Variable';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 300 900;
+  src: url(./fonts/figtree-latin-wght-normal.woff2) format('woff2-variations');
+}
+
+/* figtree-latin-wght-italic */
+@font-face {
+  font-family: 'Figtree Variable';
+  font-style: italic;
+  font-display: swap;
+  font-weight: 300 900;
+  src: url(./fonts/figtree-latin-wght-italic.woff2) format('woff2-variations');
+}

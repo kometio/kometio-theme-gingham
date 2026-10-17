@@ -1,0 +1,142 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  # The theme built into Kometio's own images, on Kometio's published builder —
+  # the same path anyone using this theme takes. A pull request only
+  # builds; main also publishes the two images.
+  #
+  # One job per image and architecture, each on a runner of that
+  # architecture, the way Kometio publishes its own images: each pushes by
+  # digest, and `merge` puts the two digests of an image behind its tags as
+  # one multi-arch image.
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        target: [public-site, api]
+        platform: [linux/amd64, linux/arm64]
+        include:
+          - platform: linux/amd64
+            runner: ubuntu-24.04
+            arch: amd64
+          - platform: linux/arm64
+            runner: ubuntu-24.04-arm
+            arch: arm64
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v7
+
+      # Lowercased: an organization or a user name may have capitals, and an image reference with capitals
+      # in it is refused.
+      - name: Image name
+        run: echo "IMAGE=ghcr.io/${OWNER,,}/kometio-theme-gingham-${{ matrix.target }}" >> "$GITHUB_ENV"
+        env:
+          OWNER: ${{ github.repository_owner }}
+
+      - uses: docker/setup-buildx-action@v4
+
+      - name: Log in to ghcr.io
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: docker/metadata-action@v6
+        id: meta
+        with:
+          images: ${{ env.IMAGE }}
+
+      - uses: docker/build-push-action@v7
+        id: build
+        with:
+          context: .
+          target: ${{ matrix.target }}
+          platforms: ${{ matrix.platform }}
+          labels: ${{ steps.meta.outputs.labels }}
+          outputs: ${{ github.event_name == 'pull_request' && 'type=cacheonly' || format('type=image,name={0},push-by-digest=true,name-canonical=true,push=true', env.IMAGE) }}
+
+      - name: Keep the digest for merge
+        if: github.event_name != 'pull_request'
+        run: |
+          mkdir -p "${{ runner.temp }}/digests"
+          digest="${{ steps.build.outputs.digest }}"
+          touch "${{ runner.temp }}/digests/${digest#sha256:}"
+
+      - uses: actions/upload-artifact@v7
+        if: github.event_name != 'pull_request'
+        with:
+          # A dot before the architecture: target names contain dashes.
+          name: digests-${{ matrix.target }}.${{ matrix.arch }}
+          path: ${{ runner.temp }}/digests/*
+          if-no-files-found: error
+          retention-days: 1
+
+  merge:
+    if: github.event_name != 'pull_request'
+    needs: build
+    strategy:
+      fail-fast: false
+      matrix:
+        target: [public-site, api]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Image name
+        run: echo "IMAGE=ghcr.io/${OWNER,,}/kometio-theme-gingham-${{ matrix.target }}" >> "$GITHUB_ENV"
+        env:
+          OWNER: ${{ github.repository_owner }}
+
+      - uses: actions/download-artifact@v8
+        with:
+          path: ${{ runner.temp }}/digests
+          pattern: digests-${{ matrix.target }}.*
+          merge-multiple: true
+
+      - uses: docker/setup-buildx-action@v4
+
+      - name: Log in to ghcr.io
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: docker/metadata-action@v6
+        id: meta
+        with:
+          images: ${{ env.IMAGE }}
+          tags: |
+            type=ref,event=branch
+            type=sha
+
+      - name: Tag the multi-arch image
+        working-directory: ${{ runner.temp }}/digests
+        run: |
+          digests=(*)
+          if [ "${#digests[@]}" -ne 2 ]; then
+            echo "Expected one digest per architecture, got ${#digests[@]}: ${digests[*]}"
+            exit 1
+          fi
+          args=()
+          while read -r tag; do args+=(-t "$tag"); done < <(jq -r '.tags[]' <<< "$DOCKER_METADATA_OUTPUT_JSON")
+          for digest in "${digests[@]}"; do args+=("$IMAGE@sha256:$digest"); done
+          docker buildx imagetools create "${args[@]}"
+
+      - name: Check both architectures are there
+        env:
+          TAG: ${{ steps.meta.outputs.version }}
+        run: |
+          platforms=$(docker buildx imagetools inspect "$IMAGE:$TAG" --format '{{json .Manifest}}' | jq -r '[.manifests[].platform | select(.os != "unknown") | .architecture] | sort | join(",")')
+          echo "$IMAGE:$TAG: $platforms"
+          test "$platforms" = "amd64,arm64"
