@@ -155,3 +155,9 @@ and `ghcr.io/<owner>/kometio-theme-gingham-api`.
 
 DM Serif Display and Figtree are licensed under the SIL Open Font License 1.1;
 the licenses are in `fonts/`.
+
+## License
+
+The theme itself (the stylesheets, the templates, the block and the regions) is
+released under the MIT License: see `LICENSE`. The fonts in `fonts/` are not
+covered by it; they keep the license above.
